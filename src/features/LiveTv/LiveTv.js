@@ -1,65 +1,63 @@
 import { loadSpatialNavigationScript, removeSpatialNavigation } from "../../../services/Navigation.js";
-import {initAVPlayer, setMediaSource, StreamType} from "../../../services/AVPlayer.js";
+import { initAVPlayer, setMediaSource, StreamType } from "../../../services/AVPlayer.js";
 
-export function LiveTvPage() {
+export async function LiveTvPage() {
     const liveTvContainer = document.createElement('div');
     liveTvContainer.setAttribute('tabindex', '0');
 
     const style = document.createElement('style');
     style.textContent = `
-        .container {
-            display: flex;
-            flex-direction: column;
-            position: relative;
-            width: 100%;
-            height: 100%;
-         
-        }
-        
-        .app-shell{
-        position: absolute;
-        top: 65%;
-        left:0;
-        }
-            
-        
-    `;
+    .container {
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      width: 100%;
+      height: 100%;
+    }
+    
+    .app-shell {
+      position: absolute;
+      top: 65%;
+      left: 0;
+    }
+  `;
     liveTvContainer.appendChild(style);
 
-    const container = document.createElement('div');
-    container.className = 'container';
+
 
     const liveTvAppShell = document.createElement('live-tv');
     liveTvAppShell.className = 'app-shell';
 
-    const liveTvFooter = document.createElement('live-footer');
-    liveTvFooter.className = 'tv-footer';
 
 
 
-    container.append(liveTvAppShell, liveTvFooter);
 
-
-    const channels = liveTvAppShell.getChannelData();
+    // Await channel data from the custom element
+    const channels = await liveTvAppShell.getChannelData();
+    if (!channels || channels.length === 0) {
+        console.error("No channel data available");
+        return liveTvContainer;
+    }
     const firstChannel = channels[0];
 
     const backgroundContainer = document.createElement('background-container');
     backgroundContainer.setAttribute('type', 'video');
     backgroundContainer.setAttribute('data-performance', 'tv-optimized');
-    backgroundContainer.setAttribute('source', firstChannel.channelLink);
+    backgroundContainer.setAttribute('source', firstChannel.url);
     backgroundContainer.setAttribute('media-type', 'live');
 
-    backgroundContainer.appendChild(container);
+    backgroundContainer.appendChild(liveTvAppShell);
     liveTvContainer.appendChild(backgroundContainer);
 
     requestAnimationFrame(() => {
         if (liveTvAppShell) {
+            // Render the app shell (this call is asynchronous, so it will update the sidebar when complete)
             liveTvAppShell.render();
             loadSpatialNavigationScript('.sidebar-item');
 
             const sidebarItems = liveTvAppShell.shadowRoot.querySelectorAll('.sidebar-item');
 
-            // Handle focus events: add 'focused' class to the focused item.
+            // Add focus handling for sidebar items
             sidebarItems.forEach(item => {
                 item.addEventListener('focus', () => {
                     sidebarItems.forEach(i => i.classList.remove('focused'));
@@ -67,10 +65,10 @@ export function LiveTvPage() {
                 });
             });
 
-            // Handle key navigation events on liveTvContainer.
-            liveTvContainer.addEventListener('keydown', (event) => {
+            // Handle key navigation events
+            liveTvContainer.addEventListener('keydown', async (event) => {
                 const currentFocus = liveTvAppShell.shadowRoot.querySelector('.focused');
-                const items = Array.from(sidebarItems);
+                const items = Array.from(liveTvAppShell.shadowRoot.querySelectorAll('.sidebar-item'));
                 const currentIndex = items.indexOf(currentFocus);
 
                 switch (event.keyCode) {
@@ -91,12 +89,13 @@ export function LiveTvPage() {
                     case 13: // Enter key
                         event.preventDefault();
                         if (currentFocus) {
-                            // Retrieve the channel index from the focused item
+                            // Retrieve fresh channel data on Enter
+                            const channels = await liveTvAppShell.getChannelData();
                             const channelIndex = currentFocus.dataset.channelIndex;
                             const selectedChannel = channels[channelIndex];
                             if (selectedChannel) {
-                               backgroundContainer.updateSource(selectedChannel.channelLink, "live");
-                                setMediaSource(selectedChannel.channelLink, "videoSurface", StreamType.LIVE);
+                                backgroundContainer.updateSource(selectedChannel.url, "live");
+                                setMediaSource(selectedChannel.url, "videoSurface", StreamType.LIVE);
                             }
                         }
                         break;
@@ -109,7 +108,7 @@ export function LiveTvPage() {
                 }
             });
 
-            // Set initial focus and selection on the first sidebar item
+            // Set initial focus on the first sidebar item
             if (sidebarItems.length > 0) {
                 sidebarItems[0].focus();
                 sidebarItems[0].classList.add('focused', 'selected');
@@ -117,7 +116,7 @@ export function LiveTvPage() {
         }
     });
 
-    // Cleanup function for navigation
+    // Cleanup function for spatial navigation
     const cleanup = () => {
         removeSpatialNavigation('.sidebar-item');
     };
@@ -128,12 +127,12 @@ export function LiveTvPage() {
     initAVPlayer();
     requestAnimationFrame(() => {
         const videoSurface = backgroundContainer.getVideoSurface();
-        if(videoSurface){
-            setMediaSource(firstChannel.channelLink, videoSurface, StreamType.LIVE);
-        }else {
+        if (videoSurface) {
+            setMediaSource(firstChannel.url, videoSurface, StreamType.LIVE);
+        } else {
             console.log("Video surface is not found in the background container");
         }
-    })
+    });
 
     return liveTvContainer;
 }

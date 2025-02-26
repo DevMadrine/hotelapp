@@ -12,23 +12,24 @@ if (window.webapis && window.webapis.avinfo) {
         get: () => false,
         configurable: false
     });
-}               
+}
 
-document.addEventListener('DOMContentLoaded', () => {
-    try{
+document.addEventListener('DOMContentLoaded', async () => {
+    try {
         console.log('App initializing.....');
+
         const root = document.getElementById('root');
-        if(!root){
+        if (!root) {
             console.error('Root element not found');
             return;
         }
+
         registerComponents();
 
-
-        const tv = Restaurant();
+        const tv = await LiveTvPage();
         root.appendChild(tv);
 
-    }catch (error){
-        console.error('Error initializing app:',  error);
+    } catch (error) {
+        console.error('Error initializing app:', error);
     }
 });

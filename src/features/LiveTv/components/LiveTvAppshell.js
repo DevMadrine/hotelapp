@@ -5,21 +5,25 @@ export class LiveTvAppShell extends HTMLElement {
   }
 
   connectedCallback() {
+    // Call render without awaiting; it's fine if it runs asynchronously
     this.render();
     this.addKeyNavigation();
   }
 
-  getChannelData() {
-    return [
-      { channelNumber: '001', channelLogo: "./src/features/LiveTv/assets/images/bukedde.jpg", channelLink: "https://channels.hydeinnovations.com/buk1/index.mpd" },
-      { channelNumber: '002', channelLogo: "./src/features/LiveTv/assets/images/channel44.jpg", channelLink: "https://channels.hydeinnovations.com/channel44/index.m3u8" },
-      { channelNumber: '003', channelLogo: "./src/features/LiveTv/assets/images/nbs.jpg", channelLink: "https://channels.hydeinnovations.com/nbs-flu/video.m3u8" },
-      { channelNumber: '004', channelLogo: "./src/features/LiveTv/assets/images/ktv.jpg", channelLink: "https://channels.hydeinnovations.com/sanyuka/index.m3u8" },
-      { channelNumber: '005', channelLogo: "./src/features/LiveTv/assets/images/ubc.png", channelLink: "https://feed.hydeinnovations.com/ubc/index.mpd" },
-    ];
+  async getChannelData() {
+    try {
+      const response = await fetch('http://192.168.1.158:3000/api/v1/channels');
+      if (!response.ok) {
+        throw new Error("Network response was not ok: " + response.statusText);
+      }
+      return await response.json();
+    } catch (error) {
+      console.error("Error fetching channel data:", error);
+      return [];
+    }
   }
 
-  render() {
+  async render() {
     // Clear previous content
     while (this.shadowRoot.firstChild) {
       this.shadowRoot.removeChild(this.shadowRoot.firstChild);
@@ -38,7 +42,9 @@ export class LiveTvAppShell extends HTMLElement {
     const navList = document.createElement('ul');
     navList.className = 'nav-list';
 
-    this.getChannelData().forEach((item, index) => {
+    // Await channel data before rendering the list
+    const channels = await this.getChannelData();
+    channels.forEach((item, index) => {
       const listItem = document.createElement('li');
       listItem.className = 'sidebar-item';
       listItem.tabIndex = 0;
@@ -47,12 +53,12 @@ export class LiveTvAppShell extends HTMLElement {
       const anchor = document.createElement('a');
       const channelNumber = document.createElement('h1');
       channelNumber.className = 'channel-number';
-      channelNumber.textContent = item.channelNumber;
+      channelNumber.textContent = item.count ? item.count.toString() : '';
 
       const imageWrapper = document.createElement('span');
       const image = document.createElement('img');
-      image.src = item.channelLogo;
-      image.alt = `Channel ${item.channelNumber}`;
+      image.src = item.logo;
+      image.alt = `Channel ${item.count}`;
 
       imageWrapper.appendChild(image);
       anchor.appendChild(channelNumber);
@@ -74,22 +80,21 @@ export class LiveTvAppShell extends HTMLElement {
   }
 
   addKeyNavigation() {
-    // Listen for keydown events in the shadow DOM.
-    this.shadowRoot.addEventListener('keydown', (event) => {
+    this.shadowRoot.addEventListener('keydown', async (event) => {
       const activeElement = this.shadowRoot.activeElement;
       if (activeElement && activeElement.classList.contains('sidebar-item')) {
         if (event.key === 'Enter') {
           event.preventDefault();
+          // Await fresh channel data so that you have the updated list
+          const channels = await this.getChannelData();
           const channelIndex = activeElement.dataset.channelIndex;
-          const channel = this.getChannelData()[channelIndex];
+          const channel = channels[channelIndex];
           console.log('Selected channel:', channel);
-          // Here you would trigger your AVPlayer to load channel.channelLink.
-          // For now, we hide the channel selection sidebar.
+          // Trigger your AVPlayer to load channel.url (or your designated property)
           this.toggleVisibility(false);
         }
       }
-
-      // Use Escape key to show the sidebar again.
+      // Use Escape or Back key to show the sidebar again.
       if (event.key === 'Escape' || event.key === 'Back') {
         event.preventDefault();
         this.toggleVisibility(true);
@@ -97,35 +102,17 @@ export class LiveTvAppShell extends HTMLElement {
     });
   }
 
-  
-  handleGlobalKeydown(event) {
-	    if (event.key === 'Escape' || event.key === 'Back') {
-	      // Check if the sidebar is currently hidden.
-	      const sidebar = this.shadowRoot.querySelector('.sidebar');
-	      if (sidebar && getComputedStyle(sidebar).display === 'none') {
-	        event.preventDefault();
-	        this.toggleVisibility(true);
-	      }
-	    }
-	  }
-  
-  
-  
-  
   /**
    * Hides or shows the channel selection sidebar.
-   * You can modify this method to hide the entire appshell if desired.
    * @param {boolean} visible - True to show; false to hide.
    */
   toggleVisibility(visible) {
     const sidebar = this.shadowRoot.querySelector('.sidebar');
     if (sidebar) {
       sidebar.style.display = visible ? '' : 'none';
-      if(visible){
-    	  this.focus();
+      if (visible) {
+        this.focus();
       }
     }
   }
 }
-
-
