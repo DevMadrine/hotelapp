@@ -1,0 +1,87 @@
+.facilities-container {
+    width: 100% !important;
+    height: 100vh !important;
+    overflow: hidden !important;
+    user-select: none !important;
+    display: flex !important;
+    flex-direction: column !important;
+    box-sizing: border-box !important;
+}
+
+.facilities-details {
+    display: flex !important;
+    gap: 2rem !important;
+    width: 95% !important;
+    height: 50vh !important;
+    margin: 2rem auto !important;
+    box-sizing: border-box !important;
+    border-radius: 1rem !important;
+    padding: 1rem !important;
+    top: 4vh;
+}
+
+.facility-video {
+    flex: 1;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.7);
+    border-radius: 0.5rem;
+    overflow: hidden;
+}
+
+.facility-video .video{
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+
+.facility-description{
+    flex: 1;
+    padding: 1.5rem;
+    border-radius: 0.5rem;
+    color: white;
+    display: flex;
+    flex-direction: column;
+}
+
+.facility-title{
+    font-size: 3rem;
+    margin-bottom: 1rem;
+}
+
+.facility-info{
+    font-size: 1.2rem;
+    margin-bottom: 2rem;
+    line-height: 1.5;
+}
+
+.controls {
+    display: flex;
+    gap: 1rem;
+    margin-top: auto;
+}
+
+.control-button {
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 0.5rem;
+    cursor: pointer;
+    background: white;
+    color: orange;
+    font-size: 1.1rem;
+    transition: all 0.3s ease;
+    width: 150px;
+}
+
+.control-button:focus {
+    outline: none;
+    background: orange;
+    color: white;
+    transform: scale(1.05);
+}
+
+.facilities-cards{
+    width: 95%;
+    margin: auto auto 2rem;
+    top: 10vh;
+}
+

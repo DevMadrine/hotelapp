@@ -1,0 +1,39 @@
+:host {
+    display: block;
+    width: 100%;
+
+
+}
+
+.card-container {
+    display: grid;
+    grid-template-columns: repeat(4, 1fr);
+    gap: 2rem;
+    justify-content: center;
+    padding: 5rem;
+}
+
+::slotted(content-card) {
+    width: 100%;
+}
+
+::slotted(content-card:focus) {
+    outline: none;
+}
+
+::slotted(.card) {
+    position: relative;
+    border-radius: 10px;
+    overflow: hidden;
+    transition: transform 0.3s ease;
+}
+
+::slotted(card) {
+    width: 100%;
+    max-width: 300px;
+}
+
+::slotted(.card[focused]) {
+    transform: scale(1.1);
+    box-shadow: 0 0 20px rgba(255, 255, 255, 0.3);
+}

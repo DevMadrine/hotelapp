@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<widget xmlns="http://www.w3.org/ns/widgets" xmlns:tizen="http://tizen.org/ns/widgets" id="http://yourdomain/SerenaHotel" version="1.0.0" viewmodes="maximized">
+    <tizen:application id="oD0uObhkaq.SerenaHotel" package="oD0uObhkaq" required_version="2.3"/>
+    <content src="index.html"/>
+    <feature name="http://tizen.org/feature/screen.size.normal.1080.1920"/>
+    <icon src="images/logo.png"/>
+    <tizen:metadata key="http://tizen.org/metadata/app_ui_type/base_screen_resolution" value="extensive"/>
+    <name>SerenaHotel</name>
+   <tizen:privilege name="http://tizen.org/privilege/application.launch"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.inputdevice"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.display"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.window"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.audio"/>
+    <tizen:privilege name="http://tizen.org/privilege/tv.internet"/>
+    <tizen:privilege name="http://tizen.org/privilege/web.api"/>
+    <tizen:privilege name="http://tizen.org/privilege/mediastorage"/>
+    <tizen:privilege name="http://tizen.org/privilege/externalstorage"/>
+    <tizen:privilege name="http://tizen.org/privilege/filesystem.read"/>
+   <tizen:privilege name="http://tizen.org/privilege/filesystem.write"/>
+    
+    <!-- Features -->
+   <feature name="http://tizen.org/feature/avplay"/>
+    <feature name="http://tizen.org/feature/video.playback"/>
+    <feature name="http://tizen.org/feature/audio.playback"/>
+    <feature name="http://tizen.org/feature/network"/>
+    <feature name="http://tizen.org/feature/network.wifi"/>
+    <feature name="http://tizen.org/feature/remotecontrol"/>
+    <feature name="http://tizen.org/feature/tv.display"/>
+    <feature name="http://tizen.org/feature/streaming.dash"/>
+    <feature name="http://tizen.org/feature/streaming.hls"/>
+    <feature name="http://tizen.org/feature/media.video_decode"/>
+    <feature name="http://tizen.org/feature/screen"/>
+    <tizen:profile name="tv-samsung"/>
+    <tizen:setting screen-orientation="landscape" context-menu="enable" background-support="disable" encryption="disable" install-location="auto" hwkey-event="enable"/>
+</widget>

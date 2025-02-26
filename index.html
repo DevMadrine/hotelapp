@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>LiveTV</title>
+    <link type="text/css" rel="stylesheet" href="css/style.css"/>
+  
+</head>
+<body>
+
+<div id="root"></div>
+<script type="module" src="./index.js" defer="defer"></script>
+<script type="text/javascript" src="$WEBAPIS/webapis/webapis.js" defer="defer"></script>
+
+<script>
+
+    window.onerror = function(msg, url, lineNo, columnNo, error) {
+        console.error('Global error:', {msg, url, lineNo, columnNo, error});
+        return false;
+    };
+</script>
+<script src="./services/SpatialNavigation.js" ></script>
+
+
+</body>
+</html>
